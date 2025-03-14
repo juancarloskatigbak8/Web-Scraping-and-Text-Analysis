@@ -161,6 +161,12 @@ After generating webscraped.csv and webscraped.txt, you're ready to perform text
 
 
 
+
+
+
+
+
+
 Part 2: Data Storage and Retrieval
 In this section, the goal was to compare the performance of Pandas vs. Polars for data manipulation and analysis. Additionally, I implemented four technical indicators to enhance the dataset and trained two machine learning models (Linear Regression & Random Forest) to predict stock prices.
 
