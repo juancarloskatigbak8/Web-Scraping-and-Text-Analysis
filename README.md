@@ -161,303 +161,111 @@ Key Findings for Part 1:
 
 
 
+Part 2: Text Analysis
+In this section, the objective was to analyze the textual data scraped from Part 1 (Web Scraping), summarize each article, and determine an importance score with directional sentiment (positive or negative). I applied two algorithms:
 
+LexRank (via LexRank summarizer - LSD): A straightforward, extractive summarization algorithm.
+Hugging Face (transformers): Leveraged a pretrained language model for summarization.
+These two methods were used to summarize the collected articles/comments and assign importance scores with a direction (positive or negative) related to the topic of "tariffs involving Canada".
 
-
-
-
-
-
-Part 2: Data Storage and Retrieval
-In this section, the goal was to compare the performance of Pandas vs. Polars for data manipulation and analysis. Additionally, I implemented four technical indicators to enhance the dataset and trained two machine learning models (Linear Regression & Random Forest) to predict stock prices.
-
-Step 1 - Loading and Filtering Data
-First, I checked if the CSV dataset exists before loading it to avoid file errors.
+Step 1 – Loading and Validating the Scraped Data
+First, I verified the presence of the scraped CSV file before loading it, to ensure the script runs without file-related issues:
 
 import os
 import pandas as pd
 
-csv_file = "all_stocks_5yr.csv"
+SCRAPED_FILE = "webscraped.csv"
 
-if not os.path.exists(csv_file):
-    raise FileNotFoundError(f"Error: {csv_file} not found. Please place the CSV file in the same folder as this script.")
-
-df = pd.read_csv(csv_file)
-print("Dataset loaded successfully.")
-
-Ensures the script runs on any computer without assuming the dataset is present. After loading, I filtered stocks where the closing price was greater than $100, a simple example of data filtering.
-
-filtered_df = df[df['close'] > 100]
-print(filtered_df.head())
-
-Then, I did the same filtering operation using Polars, since it’s known for its speed.
-
-import polars as pl
-df_polars = pl.read_csv(csv_file)
-
-filtered_df_polars = df_polars.filter(pl.col("close") > 100)
-print(filtered_df_polars.head())
-
-This demonstrates how Pandas and Polars handle filtering differently.
-
-Performance Benchmark:
-
-%timeit pd.read_csv(csv_file)
-%timeit pl.read_csv(csv_file)
-
-Pandas: 329 ms
-Polars: 20.5 ms
-
-Polars was significantly faster at reading CSV files (16x speedup).
-
-Step 2 - Enhancing the Dataset with 4 Technical Indicators
-Since raw data isn’t always useful for predictions, I enhanced the dataset by adding four key technical indicators using both Pandas and Polars.
-
-(1) Simple & Exponential Moving Averages (SMA & EMA)
-SMA and EMA help smooth price trends by averaging past values.
-
-Pandas Implementation:
-
-df["SMA_20"] = df["close"].rolling(window=20).mean()
-df["EMA_20"] = df["close"].ewm(span=20, adjust=False).mean()
-
-Polars Implementation:
-
-df_polars = df_polars.with_columns([
-    df_polars["close"].rolling_mean(window_size=20).alias("SMA_20"),
-    df_polars["close"].ewm_mean(span=20).alias("EMA_20"),
-])
-
-(2) Moving Average Convergence Divergence (MACD)
-MACD measures the momentum of price movements.
-
-Pandas Implementation:
-
-import ta
-macd = ta.trend.MACD(df["close"])
-df["MACD"] = macd.macd()
-df["MACD_Signal"] = macd.macd_signal()
-
-Polars Implementation:
-
-def compute_macd(df, column="close"):
-    short_ema = df[column].ewm_mean(span=12)
-    long_ema = df[column].ewm_mean(span=26)
-    macd = short_ema - long_ema
-    macd_signal = macd.ewm_mean(span=9)
-    return macd, macd_signal
-
-macd, macd_signal = compute_macd(df_polars, "close")
-df_polars = df_polars.with_columns(macd.alias("MACD"), macd_signal.alias("MACD_Signal"))
-
-(3) Bollinger Bands
-Measures volatility by plotting an upper and lower band around the price.
-
-Pandas Implementation:
-
-bb = ta.volatility.BollingerBands(df["close"], window=20)
-df["BB_High"] = bb.bollinger_hband()
-df["BB_Low"] = bb.bollinger_lband()
-
-Polars Implementation:
-
-def compute_bollinger_bands(df, column="close", window=20):
-    sma = df[column].rolling_mean(window_size=window)
-    std_dev = df[column].rolling_std(window_size=window)
-    upper_band = sma + (2 * std_dev)
-    lower_band = sma - (2 * std_dev)
-    return upper_band, lower_band
-
-bb_high, bb_low = compute_bollinger_bands(df_polars, "close", 20)
-df_polars = df_polars.with_columns(bb_high.alias("BB_High"), bb_low.alias("BB_Low"))
-
-(4) Stochastic Oscillator
-Measures the stock’s closing price relative to its price range over time.
-
-Pandas Implementation:
-
-df["Lowest_Low"] = df["low"].rolling(window=14).min()
-df["Highest_High"] = df["high"].rolling(window=14).max()
-df["Stoch"] = 100 * ((df["close"] - df["Lowest_Low"]) / (df["Highest_High"] - df["Lowest_Low"]))
-
-Polars Implementation:
-
-df_polars = df_polars.with_columns([
-    df_polars["low"].rolling_min(window_size=14).alias("Lowest_Low"),
-    df_polars["high"].rolling_max(window_size=14).alias("Highest_High"),
-])
-df_polars = df_polars.with_columns(
-    ((df_polars["close"] - df_polars["Lowest_Low"]) / 
-     (df_polars["Highest_High"] - df_polars["Lowest_Low"]) * 100).alias("Stoch")
-)
-
-Forward and backward filled missing values to avoid gaps in calculations.
-
-df.ffill(inplace=True)
-df.bfill(inplace=True)
-df_polars = df_polars.fill_null(strategy="forward").fill_null(strategy="backward")
-
-Step 3 - Training Machine Learning Models
-After enriching the dataset, I trained Linear Regression and Random Forest models to predict the next day’s closing price.
-
-Defining Features & Target
-
-features = ["SMA_20", "EMA_20", "MACD", "MACD_Signal", "BB_High", "BB_Low", "Stoch"]
-df_pandas["target"] = df_pandas["close"].shift(-1)
-df_polars = df_polars.with_columns(df_polars["close"].shift(-1).alias("target"))
-
-Splitting Data for Training & Testing
-
-X_train_pandas, X_test_pandas, y_train_pandas, y_test_pandas = train_test_split(
-    df_pandas[features], df_pandas["target"], test_size=0.2, random_state=42, shuffle=False
-)
-
-X_train_polars, X_test_polars, y_train_polars, y_test_polars = train_test_split(
-    df_polars.select(features).to_pandas(), df_polars.select("target").to_pandas(), 
-    test_size=0.2, random_state=42, shuffle=False
-)
-
-Training Models
-
-(1) Linear Regression
-
-lr_model_pandas = LinearRegression().fit(X_train_pandas, y_train_pandas)
-lr_model_polars = LinearRegression().fit(X_train_polars, y_train_polars)
-
-(2) Random Forest
-
-rf_model_pandas = RandomForestRegressor(n_estimators=100).fit(X_train_pandas, y_train_pandas)
-rf_model_polars = RandomForestRegressor(n_estimators=100).fit(X_train_polars, y_train_polars)
-
-Evaluating Models
-
-print("MAE:", mean_absolute_error(y_test_pandas, y_pred_lr_pandas))
-print("R2 Score:", r2_score(y_test_pandas, y_pred_lr_pandas))
-
-Findings:
-1. Polars models performed slightly worse than Pandas.
-2. Pandas and Polars both showed similar MAE, but Polars had slower training.
-
-Final Takeaways:
-1. Polars is faster than Pandas for data manipulation, but it’s less optimized for ML tasks.
-2. Random Forest outperformed Linear Regression for stock price predictions.
-3. All four technical indicators were useful in improving model accuracy.
-
-
-Part 3: Visual Dashboard for Benchmarking & Predictions
-In this final section, the goal was to create an interactive dashboard to display:
-
-Benchmarking results from Part 1 (CSV vs. Parquet, Pandas vs. Polars, ML model performance)
-Stock price predictions from Part 2, including actual & predicted prices and technical indicators
-
-For this, I chose Streamlit as the dashboarding framework because: (1) It provides an interactive and user-friendly interface, (2) it allows real-time updates for selected stock tickers, (3) it integrates well with Plotly for data visualization, and (4) it is good for beginners.
-
-Step 1 - Loading & Caching Data
-To improve performance, I cached the benchmark data and stock dataset using @st.cache_data, ensuring data is only loaded once unless the script is restarted.
+if not os.path.exists(SCRAPED_FILE):
+    raise FileNotFoundError(f"Error: {SCRAPED_FILE} not found. Ensure file exists in directory.")
+else:
+    df = pd.read_csv(SCRAPED_FILE)
+    print("Dataset loaded successfully.")
     
-Caching the data prevents unnecessary reloading, making the dashboard faster and is useful when switching between different stock tickers.
+This validation makes sure there is reliability when running analysis on any machine.
 
-Step 2 - Creating the Dashboard Layout
-The dashboard has two sections, controlled via a sidebar navigation menu.
 
-This allows users to switch between:
+Step 2 – Applying Text Summarization Algorithms
+I chose two distinct summarization algorithms to explore their performance and quality differences:
 
-1. Benchmark Results
-2. Stock Price Predictions
-   
-Step 3 - Displaying Benchmark Results (Dashboard A)
-This section visualizes machine learning model performance and CSV vs. Parquet storage performance.
+(1) LSA-based (LSD) Summary:
 
-Comparison of MAE, MSE, and R² Score for Pandas vs. Polars models.
+This method applies the classical extractive summarization approach using Latent Semantic Analysis (LSD-based summarization), which works reliably regardless of text size but provides simpler summaries.
 
-fig1 = px.bar(benchmark_long, 
-              x="Algorithm", 
-              y="Value", 
-              color="Metric", 
-              barmode="group", 
-              title="Model Performance Comparison (MAE, MSE, R² Score)")
-st.plotly_chart(fig1)
+from sumy.parsers.plaintext import PlaintextParser
+from sumy.nlp.tokenizers import Tokenizer
+from sumy.summarizers.lsa import LsaSummarizer
 
-Findings:
-1. Random Forest performed slightly better than Linear Regression in Pandas but had slower performance in Polars.
+def summarize_lsd(text, sentences=3):
+    parser = PlaintextParser.from_string(text, Tokenizer("english"))
+    summarizer = LsaSummarizer()
+    summary = summarizer(parser.document, sentences)
+    return ' '.join(str(sentence) for sentence in summary)
+    
+Observations:
 
-Comparison of CSV vs. Parquet read times across different dataset sizes (1x, 10x, 100x).
+- LSD summarizer consistently produced summaries for most articles.
+- It failed only when insufficient text or no content was available.
 
-fig2 = px.bar(storage_benchmark, 
-              x="Scale", 
-              y="Read Time (ms)", 
-              color="Kind of File", 
-              barmode="group",
-              title="CSV vs Parquet Read Time Across Different Scales")
-st.plotly_chart(fig2)
 
-Findings:
-1. Parquet was consistently faster than CSV, especially at 10x and 100x scales.
-2. At 100x scale, Parquet was 19.4x faster than CSV.
-   
-Step 4 - Stock Price Predictions (Dashboard B)
-This section visualizes actual vs. predicted stock prices and includes key technical indicators.
+Step 3 – Summarization with Hugging Face transformers
+Utilized the Hugging Face library, specifically transformers with a pretrained summarization model (e.g., bart-large-cnn). However, this model encountered limitations, specifically an "IndexError: index out of range in self" due to the token input limit (~1024 tokens).
 
-Selecting a Stock Ticker
+from transformers import pipeline
 
-stock_ticker = st.selectbox("Select a stock ticker:", df["name"].unique())
-df_stock = df[df["name"] == stock_ticker]
+summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 
-Users can select any stock ticker, and the charts will update dynamically.
+def summarize_hf(text):
+    max_input_tokens = 1024
+    words = text.split()
+    truncated_text = " ".join(words[:max_tokens])
+    summary = summarizer(truncated_text, max_length=150, min_length=50, do_sample=False)
+    return summary[0]['summary_text']
+    
+The Hugging Face summarizer frequently encountered errors like "IndexError: index out of range in self" due to the excessive length of some comments/posts, causing failures in generating summaries.
 
-Candlestick Chart with Predictions
+As a result, many summaries resulted in "Summarization error," indicating limitations in model input lengths or internal tokenizer errors.
 
-Displays actual stock price movement with predicted next-day prices.
 
-fig3.add_trace(go.Candlestick(
-    x=df_stock["date"],
-    open=df_stock["open"],
-    high=df_stock["high"],
-    low=df_stock["low"],
-    close=df_stock["close"],
-    name="Actual Price",
-    increasing_line_color="green",
-    decreasing_line_color="red"
-))
+Step 4 – Computing Importance Scores & Direction
+For each summarization method, I derived an importance score based on the sentiment analysis of each summarized article/comment, using a pre-trained sentiment analyzer (transformers pipeline sentiment-analysis):
 
-fig3.add_trace(go.Scatter(
-    x=df_stock["date"], 
-    y=df_stock["close"].shift(-1),
-    mode="lines",
-    name="Predicted Price",
-    line=dict(color="black", dash="dot")
-))
+from transformers import pipeline
 
-Users can visually compare actual vs. predicted prices.
+sentiment_analyzer = pipeline("sentiment-analysis")
 
-Overlaying Technical Indicators
+def analyze_sentiment(text):
+    sentiment_result = sentiment_analyzer(text)[0]
+    direction = 1 if sentiment['label'] == 'POSITIVE' else -1
+    score = sentiment['score']
+    return score, sentiment
+    
+Positive direction (+1): Indicates a positive sentiment towards tariffs as beneficial or favorable towards Canada.
 
-To help analyze trends, I plotted: (1) SMA (20) & EMA (20), (2) Bollinger Bands, (3) MACD & MACD Signal, and (4) Stochastic Oscillator
+Negative (-1) indicates negative sentiment, signifying negative impacts or criticism of tariffs against Canada.
 
-fig3.add_trace(go.Scatter(x=df_stock["date"], y=df_stock["SMA_20"], 
-                          mode="lines", name="SMA (20)", line=dict(color='blue')))
-fig3.add_trace(go.Scatter(x=df_stock["date"], y=df_stock["EMA_20"], 
-                          mode="lines", name="EMA (20)", line=dict(color='orange', dash='dot')))
+Example:
 
-fig3.add_trace(go.Scatter(x=df_stock["date"], y=df_stock["BB_High"], 
-                          mode="lines", name="Bollinger High", line=dict(color='purple', dash='dot')))
-fig3.add_trace(go.Scatter(x=df_stock["date"], y=df_stock["BB_Low"], 
-                          mode="lines", name="Bollinger Low", line=dict(color='purple', dash='dot')))
+"Canada stands strong against tariffs." = Positive score: +1
+"Tariffs will severely harm Canadian industries." = Negative score: -1
 
-fig3.add_trace(go.Scatter(x=df_stock["date"], y=df_stock["MACD"], 
-                          mode="lines", name="MACD", line=dict(color='green')))
-fig3.add_trace(go.Scatter(x=df_stock["date"], y=df_stock["MACD_Signal"], 
-                          mode="lines", name="MACD Signal", line=dict(color='red')))
+Final Findings:
+- LSA (sumy) summarization successfully handled almost all articles, providing concise, reliable summaries for a majority of articles.
+- Hugging Face summarizer (transformers) was limited by input text length and often failed when text was too long or insufficiently structured.
+- Sentiment analysis effectively assigned directional importance scores, clearly indicating the sentiment context around tariffs.
+  
+Key Takeaways:
+- BeautifulSoup was successfully used to scrape Reddit efficiently for a small-to-medium dataset.
+- Sumy's LSA summarizer reliably summarized content but provided simpler, less nuanced summaries.
+- Hugging Face summarization models provided richer summaries but encountered issues with lengthy texts or input formatting constraints.
+- Sentiment analysis provided meaningful directional scores for interpreting summarized text sentiment, enhancing interpretability and contextual analysis of the data.
 
-fig3.add_trace(go.Scatter(x=df_stock["date"], y=df_stock["Stoch"], 
-                          mode="lines", name="Stochastic Oscillator", line=dict(color='brown', dash='dot')))
 
-Users can toggle indicators on/off using the legend.
 
-Final Takeaways:
-1. Streamlit provided a fast, interactive way to visualize model results.
-2. Dashboard A demonstrated how CSV vs. Parquet and Pandas vs. Polars performed across different benchmarks.
-3. Dashboard B allowed users to explore stock price predictions and key technical indicators dynamically.
+
+
+
+
    
 
 ## Author
