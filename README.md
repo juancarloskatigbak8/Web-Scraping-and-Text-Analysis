@@ -69,8 +69,10 @@ env\Scripts\activate
 For macOS/Linux (Terminal)/For Windows (Command Prompt):
 pip install beautifulsoup4 requests pandas numpy lxml transformers torch sentencepiece scipy scikit-learn tqdm ipywidgets scrapy
 
+(Note: Regularly copy/paste/run this on the first cell of part1.ipynb and part2.ipynb just to make sure that these dependencies have also been installed in your Terminal/Command Prompt in case they have not been installed yet)
 
-For Jupyter Notebook:
+
+For Jupyter Notebook (Note: Regularly copy/paste/run this on the first cell of part1.ipynb and part2.ipynb just to make sure that these dependencies have also been installed in your Jupyter Notebook in case they have not been installed yet):
 !pip install beautifulsoup4 requests pandas numpy lxml transformers torch sentencepiece scipy scikit-learn tqdm ipywidgets scrapy
 
 
