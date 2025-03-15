@@ -115,6 +115,55 @@ jupyter notebook
 
 this will then open Jupyter Notebook in your web browser and once inside Jupyter Notebook, open part2.ipynb and run each code using shift + enter.
 
+*Note: In case you run to a problem with running step2.ipynb on Windows, here is the step-by-step guide to install and fix transformers on Windows:
+
+Step 1: Activate Your Virtual Environment
+If you have already created a virtual environment, activate it.
+
+- For Windows Command Prompt (CMD):
+
+env\Scripts\activate
+
+- For Windows PowerShell:
+
+env\Scripts\Activate.ps1
+
+If PowerShell gives a security error:
+Run this command to allow scripts in PowerShell:
+
+Set-ExecutionPolicy Unrestricted -Scope Process
+
+Then, activate the environment again.
+
+Step 2: Upgrade pip and setuptools
+Old versions of pip and setuptools might cause issues when installing transformers. Upgrade them first:
+
+
+pip install --upgrade pip setuptools wheel
+
+
+Step 3: Install transformers, torch, and sentencepiece
+Now, install transformers and all required dependencies:
+
+
+pip install transformers torch sentencepiece
+
+If you have issues installing sentencepiece, try:
+
+pip install --no-cache-dir sentencepiece
+
+
+Step 4: Verify the Installation
+After installing, check if transformers is available:
+
+
+python -c "import transformers; print(transformers.__version__)"
+You should see an output like:
+
+4.49.0
+
+
+
 
 ## Explanation of Each Part
 
