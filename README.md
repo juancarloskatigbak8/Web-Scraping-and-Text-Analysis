@@ -119,30 +119,33 @@ this will then open Jupyter Notebook in your web browser and once inside Jupyter
 ## Explanation of Each Part
 
 Part 1: Web Scraping with BeautifulSoup
-The goal of Part 1 was to evaluate popular web scraping libraries (Scrapy, BeautifulSoup, and Playwright) for retrieving data from websites, focusing primarily on ease of use, reliability, and beginner friendliness. After researching and benchmarking these libraries:
+The goal of Part 1 was to evaluate popular web scraping libraries (BeautifulSoup and Scrapy) for retrieving data from websites, focusing primarily on ease of use, reliability, and beginner friendliness. After researching and benchmarking these libraries:
+
+BeautifulSoup (selected library):
+
+Pros: Easy to use and beginner-friendly for someone like me. Simple syntax for parsing HTML content.
+Cons: Slightly slower compared to Scrapy, not designed for large-scale scraping tasks
+Time to fetch article details: 26.21 seconds
+Total time for scraping process: 26.79 seconds
 
 Scrapy:
 
 Pros: Highly efficient and scalable, built-in support for asynchronous scraping.
-Cons: Higher complexity, less beginner-friendly due to the steep learning curve.
-BeautifulSoup (selected library):
+Cons: Higher complexity, less beginner-friendly for me due to the steep learning curve.
+Time to fetch article details: 3.13 seconds
+Total time for scraping process: 4.47 seconds
 
-Pros: Easy to use and beginner-friendly. Simple syntax for parsing HTML content.
-Cons: Slightly slower compared to Scrapy, not designed for large-scale scraping tasks.
-Playwright (browser automation):
 
-Pros: Supports dynamic web pages that use JavaScript.
-Cons: Slower than Scrapy and BeautifulSoup due to full browser automation overhead.
-Why BeautifulSoup?
-BeautifulSoup was chosen due to ease of use, readability of the code, and excellent suitability for beginners learning web scraping.
+In spite of the delay in fetching and scraping, BeautifulSoup was chosen due to ease of use, readability of the code, and excellent suitability for beginners like me learning web scraping.
 
-Implementation
-Scraped the r/canada subreddit for 100 posts containing the topic "tariffs".
-Collected and parsed the Reddit titles, direct Reddit URLs, external links (if provided), and retrieved up to 50 comments per post.
-Implemented retry logic to handle Reddit API limitations (HTTP 429 rate limits).
-Generated two files (webscraped.csv and webscraped.txt) containing the retrieved posts and associated comments.
+Implementation:
+
+- Scraped the r/canada subreddit for 100 posts containing the topic "tariffs".
+- Collected and parsed the Reddit titles, direct Reddit URLs, external links (if provided), and retrieved up to 50 comments per post.
+- Implemented retry logic to handle Reddit API limitations (HTTP 429 rate limits).
+- Generated two files (webscraped.csv and webscraped.txt) containing the retrieved posts and associated comments.
+
 Output Example:
-
 
 [1/100] Retrieved: 'Only Works as a State': Trump Vows Not 'To Bend' On Tariffs
 Reddit URL: [reddit link]
@@ -152,11 +155,9 @@ Collected 100 posts in 150.25 seconds.
 Scraping complete!
 
 Key Findings for Part 1:
-BeautifulSoup effectively retrieved data with minimal complexity.
-Error handling was necessary due to occasional retrieval issues (rate limits or unavailable content).
-Adding delays (time.sleep()) was necessary to avoid overwhelming Reddit servers and getting rate-limited (HTTP 429 errors).
-Proceeding to Part 2
-After generating webscraped.csv and webscraped.txt, you're ready to perform text analysis on the scraped comments.
+- BeautifulSoup effectively retrieved data with minimal complexity.
+- Error handling was necessary due to occasional retrieval issues (rate limits or unavailable content).
+- Adding delays (time.sleep()) was necessary to avoid overwhelming Reddit servers and getting rate-limited (HTTP 429 errors).
 
 
 
