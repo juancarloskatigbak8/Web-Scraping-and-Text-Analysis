@@ -115,6 +115,8 @@ jupyter notebook
 
 this will then open Jupyter Notebook in your web browser and once inside Jupyter Notebook, open part2.ipynb and run each code using shift + enter.
 
+*Warning: expect 10 to 20 minutes for Part 2 Text Analysis to get the results depending on the CPU of your laptop
+
 *Note: In case you run to a problem with running step2.ipynb on Windows, here is the step-by-step guide to install and fix transformers on Windows:
 
 Step 1: Activate Your Virtual Environment
