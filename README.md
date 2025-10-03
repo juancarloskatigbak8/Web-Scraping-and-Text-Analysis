@@ -29,7 +29,7 @@ Text Analysis:
 
 ## Assignment Structure (if extracted using Github)
 
-Katigbak_300366535_Assignment2
+Web-Scraping-and-Text-Analysis-main
 │── beautifulsoup_subreddit_canada_tariffs.ipynb   # Benchmarked BeautifulSoup scraper
 │── scrapy_subreddit_canada_tariffs.py             # Benchmarked Scrapy scraper
 │── part1.ipynb                                    # Chosen BeautifulSoup scraper used to scrape 100 Reddit                                                        posts
@@ -44,13 +44,13 @@ Katigbak_300366535_Assignment2
 
 ### Installing (using either macOS/Linux's Terminal or Windows' Command Prompt)
 
-1. Extraction of Katigbak_300366535_Assignment2 folder
+1. Extraction of Web-Scraping-and-Text-Analysis-main folder
 
 If getting it from OneDrive:
-Just simply download the Katigbak_300366535_Assignment2.zip folder and extract the folder which will have the files.                           
+Just simply download the Web-Scraping-and-Text-Analysis-main.zip folder and extract the folder which will have the files.                           
 
 If getting it from Github:
-Extract Katigbak_300366535_Assignment2.zip and make sure that the extracted folder will have the files because there is a tendency that the extracted folder will have another folder before you are able to get the files. You also have to make sure when you run the virtual environment, you are able to locate the exact location of the Katigbak_300366535_Assignment2 folder otherwise it will not run properly.
+Extract Web-Scraping-and-Text-Analysis-main.zip and make sure that the extracted folder will have the files because there is a tendency that the extracted folder will have another folder before you are able to get the files. You also have to make sure when you run the virtual environment, you are able to locate the exact location of the Web-Scraping-and-Text-Analysis-main folder otherwise it will not run properly.
 
 2. Set Up a Virtual Environment (Optional but Recommended)
    
@@ -87,29 +87,29 @@ using either macOS/Linux's Terminal or Windows' Command Prompt, run:
 
 jupyter notebook
 
-this will then open Jupyter Notebook in your web browser and once inside Jupyter Notebook, open beautifulsoup_subreddit_canada_tariffs.ipynb in the Katigbak_300366535_Assignment2 folder wherever it is located in the Jupyter Notebook and run each code using shift + enter
+this will then open Jupyter Notebook in your web browser and once inside Jupyter Notebook, open beautifulsoup_subreddit_canada_tariffs.ipynb in the Web-Scraping-and-Text-Analysis-main folder wherever it is located in the Jupyter Notebook and run each code using shift + enter
 
 (2) Scrapy
 using either macOS/Linux's Terminal or Windows' Command Prompt, open a new tab for the Shell and run:
 
 if using macOS/Linux's Terminal:
 
-cd ~/Desktop/Katigbak_300366535_Assignment2
+cd ~/Desktop/Web-Scraping-and-Text-Analysis-main
 scrapy runspider scrapy_subreddit_canada_tariffs.py
 
 if using Windows' Command Prompt:
 
-cd %USERPROFILE%\Desktop\Katigbak_300366535_Assignment2
-(e.g. cd OneDrive\Desktop\Katigbak_300366535_Assignment2) #since Katigbak_300366535_Assignment2 is the folder with the file
+cd %USERPROFILE%\Desktop\Web-Scraping-and-Text-Analysis-main
+(e.g. cd OneDrive\Desktop\Web-Scraping-and-Text-Analysis-main) #since Web-Scraping-and-Text-Analysis-main is the folder with the file
 
 scrapy runspider scrapy_subreddit_canada_tariffs.py
 
 
-Second, since I decided with BeautifulSoup we continue using part1.ipynb in the Katigbak_300366535_Assignment2 folder wherever it is located in the Jupyter Notebook and run each code using shift + enter. Once you run everything, it will create the webscraped.csv and webscraped.txt files in the same Katigbak_300366535_Assignment2 folder with webscraped.csv being the file to be able to do Part 2: Text Analysis (just the same, the webscraped.csv and webscraped.txt files are also available in the Katigbak_300366535_Assignment2 folder and will be overwritten once part1.ipynb is run).
+Second, since I decided with BeautifulSoup we continue using part1.ipynb in the Web-Scraping-and-Text-Analysis-main folder wherever it is located in the Jupyter Notebook and run each code using shift + enter. Once you run everything, it will create the webscraped.csv and webscraped.txt files in the same Web-Scraping-and-Text-Analysis-main folder with webscraped.csv being the file to be able to do Part 2: Text Analysis (just the same, the webscraped.csv and webscraped.txt files are also available in the Web-Scraping-and-Text-Analysis-main folder and will be overwritten once part1.ipynb is run).
 
 
 Part 2: Text Analysis
-In the same Jupyter Notebook wherever Katigbak_300366535_Assignment2 folder is located, open part2.ipynb and run each code using shift + enter which will then create textanalysis.csv in the samen folder which contains a summary of each article with corresponding importance score. (just the same, textanalysis.csv is also available in the Katigbak_300366535_Assignment2 folder and will be overwritten once part2.ipynb is run).
+In the same Jupyter Notebook wherever Web-Scraping-and-Text-Analysis-main folder is located, open part2.ipynb and run each code using shift + enter which will then create textanalysis.csv in the samen folder which contains a summary of each article with corresponding importance score. (just the same, textanalysis.csv is also available in the Web-Scraping-and-Text-Analysis-main folder and will be overwritten once part2.ipynb is run).
 
 You can also skip Part 1 and go straight to Part 2 using either macOS/Linux's Terminal or Windows' Command Prompt, run:
 
