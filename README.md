@@ -1,11 +1,11 @@
-# Assignment Title
+# Project Title
 
-Assignment 2: Web Scraping and Text Analysis
-presented by Juan Carlos Katigbak 300366535 to Nikhil Bhardwaj CSIS4260 Special Topics in Data Analytics Section 001
+Web Scraping and Text Analysis
 
-## About the Assignment
 
-The purpose of this assignment is to combine research, benchmarking, and practical coding to perform web scraping from publicly available sources, followed by comprehensive text analysis. The assignment is divided into two parts, each incorporating research and coding elements.
+## About the Project
+
+The purpose of this project is to combine research, benchmarking, and practical coding to perform web scraping from publicly available sources, followed by comprehensive text analysis. The project is divided into two parts, each incorporating research and coding elements.
 
 Objectives
 Part 1: Web Scraping
