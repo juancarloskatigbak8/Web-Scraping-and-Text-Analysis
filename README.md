@@ -8,7 +8,7 @@ Benchmarking BeautifulSoup vs Scrapy for Reddit scraping, followed by dual-algor
 
 Two-part pipeline: scrape Reddit at scale, then analyze the collected text using two different summarization approaches side by side.
 
-**Part 1** benchmarks BeautifulSoup and Scrapy on the same scraping task — same subreddit, same topic, same volume — measuring fetch time and total scraping time to evaluate speed and usability tradeoffs.
+**Part 1** benchmarks BeautifulSoup and Scrapy on the same scraping task: same subreddit, same topic, same volume, measuring fetch time and total scraping time to evaluate speed and usability tradeoffs.
 
 **Part 2** applies two summarization algorithms to the scraped content: a custom word-frequency LSA summarizer and HuggingFace's `facebook/bart-large-cnn` model. Each post gets an extractive summary, an abstractive summary, and an importance score. Results are written to a structured CSV for comparison.
 
@@ -31,7 +31,7 @@ Both libraries were tested on the same 10-post scraping task to measure raw perf
 
 **Scrapy is ~6x faster** on this task due to its asynchronous architecture.
 
-**BeautifulSoup selected** for the full 100-post scrape — simpler syntax, easier retry logic implementation, and more readable code for a task at this scale. Scrapy's speed advantage is more meaningful at larger volumes where asynchronous scraping compounds.
+**BeautifulSoup selected** for the full 100-post scrape: simpler syntax, easier retry logic implementation, and more readable code for a task at this scale. Scrapy's speed advantage is more meaningful at larger volumes where asynchronous scraping compounds.
 
 ### Implementation
 
@@ -63,7 +63,7 @@ Abstractive summarization using `facebook/bart-large-cnn`:
 - Output: 50–150 token abstractive summary
 - Known limitation: posts with very short or poorly structured text occasionally returned summarization errors
 
-Importance score: assigned based on word count parity (odd/even) — a deliberate design choice to produce a mixed directional distribution for comparison purposes.
+Importance score: assigned based on word count parity (odd/even) - a deliberate design choice to produce a mixed directional distribution for comparison purposes.
 
 ### Output Structure
 
@@ -113,7 +113,7 @@ Web-Scraping-and-Text-Analysis/
 **Summarization:** The custom LSA summarizer consistently produced output for all 100 posts. The HuggingFace BART model produced richer, more coherent abstractive summaries but encountered failures on posts with very short or fragmented comment text due to token length constraints.
 
 **Honest limitations:**
-- Reddit's API returns a maximum of 25 posts per page — pagination was required to reach 100 posts
+- Reddit's API returns a maximum of 25 posts per page: pagination was required to reach 100 posts
 - Rate limiting (HTTP 429) required retry logic and delays, extending total scrape time
 - HuggingFace summarization is not fully reproducible without a GPU; CPU inference is slow and may vary
 
